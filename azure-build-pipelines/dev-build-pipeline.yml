@@ -1,0 +1,39 @@
+# medication-reminder pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  - dev
+
+pool:
+  name: "agent140"
+
+variables:
+  - group: jio_health_variables
+  - name: APP_NAME
+    value: grpc-sample-service
+  - name: ENV
+    value: dev
+  - name: IMAGE_NAME
+    value: $(DOCKER_IMAGE_BASE_NAME)$(APP_NAME):$(ENV)-latest
+
+steps:
+  - script: docker login $(DOCKER_SERVER) -u="$(DOCKER_USERNAME)" -p="$(DOCKER_PASSWORD)"
+    displayName: Logging-in to docker
+
+  - script: docker build
+      --network=host
+      --build-arg PROXY_NO=$PROXY_NO
+      --build-arg PROXY_HTTPS=$PROXY_HTTPS
+      --build-arg PROXY_HTTP=$PROXY_HTTP
+      -t $(IMAGE_NAME) .
+    displayName: "Building the docker image $(IMAGE_NAME)"
+
+  - script: docker push $(IMAGE_NAME)
+    displayName: "Pushing the image $(IMAGE_NAME) to docker"
+
+  - script: |
+      echo Add other tasks to build, test, and deploy your project.
+      echo See https://aka.ms/yaml
+    displayName: "Run a multi-line script"

@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpc-service-app
+  labels:
+    app: grpc-service-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: grpc-service-app
+  template:
+    metadata:
+      labels:
+        app: grpc-service-app
+    spec:
+      containers:
+        - name: grpc-service-app
+          image: grpc-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
